@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>そまふぁみくじ</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    video, img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    #kuji, #result, #share {
+      display: none;
+      cursor: pointer;
+    }
+    /* 結果画像がふわっと出るアニメーション */
+    .fadeIn {
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    #share {
+      margin-top: 20px;
+      background: #1DA1F2;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <!-- 最初の動画 -->
+  <video id="introVideo" autoplay muted playsinline>
+    <source src="intro.mp4" type="video/mp4">
+    動画を再生できません
+  </video>
+
+  <!-- くじを引く画面（プレゼントボックス画像） -->
+  <img id="kuji" src="box.jpg" alt="くじを引く">
+
+  <!-- 共通演出動画 -->
+  <video id="resultVideo" style="display:none;" playsinline>
+    <source src="boxmv.mp4" type="video/mp4">
+    結果演出動画を再生できません
+  </video>
+
+  <!-- 結果画像 -->
+  <img id="result" style="display:none;" alt="結果">
+
+  <!-- Xシェアボタン -->
+  <a id="share" href="#" target="_blank">Xでシェアする</a>
+
+  <script>
+    const introVideo = document.getElementById("introVideo");
+    const kuji = document.getElementById("kuji");
+    const resultVideo = document.getElementById("resultVideo");
+    const result = document.getElementById("result");
+    const share = document.getElementById("share");
+
+    // くじ結果リスト
+    const results = [
+      { name: "大吉", img: "daikiti.jpg" },
+      { name: "中吉", img: "chukiti.jpg" },
+      { name: "小吉", img: "shokiti.jpg" },
+      { name: "凶",   img: "kyo.jpg" }
+    ];
+
+    // 最初の動画が終わったらくじ画面へ
+    introVideo.onended = () => {
+      introVideo.style.display = "none";
+      kuji.style.display = "block";
+    };
+
+    // 箱タップ → 演出動画再生
+    kuji.onclick = () => {
+      kuji.style.display = "none";
+      resultVideo.style.display = "block";
+      resultVideo.play();
+    };
+
+    // 演出動画が終わったら結果表示
+    resultVideo.onended = () => {
+      resultVideo.style.display = "none";
+      const rand = Math.floor(Math.random() * results.length);
+      result.src = results[rand].img;
+      result.alt = results[rand].name;
+      result.classList.add("fadeIn");
+      result.style.display = "block";
+      share.style.display = "block";
+
+      // シェアテキスト設定
+      const shareText = encodeURIComponent(`そまふぁみくじの結果は「${results[rand].name}」でした！✨ #そまふぁみくじ`);
+      share.href = `https://twitter.com/intent/tweet?text=${shareText}`;
+    };
+  </script>
+</body>
+</html>
